@@ -59,3 +59,7 @@ div.grid-item.pacman {
   height: 35px;
   margin: 0px;
 }
+
+.hidden {
+  display: none;
+}

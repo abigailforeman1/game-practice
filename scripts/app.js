@@ -2,7 +2,7 @@ function init() {
 
   // CHALLENGES
   // placing multiple CSS classes onto the same grid square - simple fix of changing the order in CSS file
-  // 
+  // pacman movement storing directions from handlekeydown events and using them when possible 
 
   // ? make the grid 
   // ? make pacman 
@@ -31,7 +31,9 @@ function init() {
   const bigFoods = [19, 34, 289, 304]
   let pacmanIndex = 292
   let playerScore = 0
-  const direction = 'right'
+  let direction = 'right'
+  let running = false
+  let startGameTimer
 
   // * Function to create the grid
   function makeGrid() {
@@ -75,53 +77,77 @@ function init() {
   // add event listener and update/push whatever key is pressed down into the direction object/array 
   // set a timer that kicks off the handlekeydown function and uses direction as the switch statement 
 
-
+  function updateMovement(e) {
+    switch (e.keyCode) {
+      case 39:
+        direction = 'right'
+        break
+      case 37:
+        direction = 'left'
+        break
+      case 38:
+        direction = 'up'
+        break
+      case 40:
+        direction = 'down'
+        break 
+      default:
+        console.log('not valid!')
+    }
+    console.log(direction)
+  }
 
   function startGame() {
-    // const startGameTimer = setInterval(dropBomb, 200)
-    console.log('starting')
+    running = true
+    startGameTimer = setInterval(pacmanMovement, 200)
+    startBtn.classList.add('hidden')
   }
 
   // * Function to make pacman move
-  function handleKeyDown(e) {
+  function pacmanMovement() {
+    console.log(running)
+
     // 39 = right 
     // 37 = left
     // 38 = up
     // 40 = down
 
-    switch (e.keyCode) {
-      case 39:
+    switch (direction) {
+      case 'right':
         if (!squares[pacmanIndex + 1].classList.contains('maze-wall')) { // checking if next square to the right is not a maze wall  
           pacmanIndex++
         }
         break
-      case 37:
+      case 'left':
         if (!squares[pacmanIndex - 1].classList.contains('maze-wall')) { // checking it player has reached left side of the grid
           pacmanIndex--
         }
         break
-      case 38:
+      case 'up':
         if (!squares[pacmanIndex - width].classList.contains('maze-wall')) {
           pacmanIndex -= width
         }
         break
-      case 40:
+      case 'down':
         if (!squares[pacmanIndex + width].classList.contains('maze-wall')) {
           pacmanIndex += width
         }
         break
-      default:
-        console.log('not valid!')
     }
     squares.forEach(square => square.classList.remove('pacman'))
     squares[pacmanIndex].classList.add('pacman')
     eatFood()
 
     // * checking if pacman reaches the portal 
-    if (pacmanIndex === 161 && e.keyCode === 39) {
+    if (pacmanIndex === 161 && direction === 'right') {
       pacmanIndex -= width
-    } else if (pacmanIndex === 144 && e.keyCode === 37) {
+    } else if (pacmanIndex === 144 && direction === 'left') {
       pacmanIndex += width
+    }
+
+    // * a Boolean check to stop pacmans movement whenever running is set to false
+    if (running === false) {
+      clearInterval(startGameTimer)
     }
   }
 
@@ -132,14 +158,15 @@ function init() {
       scoreDisplay.innerHTML = playerScore
       squares[pacmanIndex].classList.remove('food')
     } else if (squares[pacmanIndex].classList.contains('big-food')) {
-      playerScore += 100
+      playerScore += 50
       scoreDisplay.innerHTML = playerScore
       squares[pacmanIndex].classList.remove('big-food')
     }
   }
 
   // * Event listeners
-  window.addEventListener('keydown', handleKeyDown)
+  // window.addEventListener('keydown', handleKeyDown)
+  window.addEventListener('keydown', updateMovement)
   startBtn.addEventListener('click', startGame)
 }
 
