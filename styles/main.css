@@ -31,18 +31,26 @@ div.maze-wall {
   background-color: grey;
 }
 
-div.grid-item.pacman {
-  background-color: yellow;
-  border-radius: 100%;
-  width: 35px;
-  height: 35px;
-  margin: 0px;
-}
-
 div.grid-item.food {
   background-color: hotpink;
   border-radius: 100%;
   width: 7px;
   height: 7px;
   margin: 14px;
+}
+              
+div.grid-item.big-food {
+  background-color: hotpink;
+  border-radius: 100%;
+  width: 15px;
+  height: 15px;
+  margin: 10px;
+}
+
+div.grid-item.pacman {
+  background-color: yellow;
+  border-radius: 100%;
+  width: 35px;
+  height: 35px;
+  margin: 0px;
 }
