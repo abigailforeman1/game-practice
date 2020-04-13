@@ -1,5 +1,9 @@
 function init() {
 
+  // CHALLENGES
+  // placing multiple CSS classes onto the same grid square - simple fix of changing the order in CSS file
+  // 
+
   // ? make the grid 
   // ? make pacman 
   // ? build the maze walls with divs 
@@ -10,10 +14,12 @@ function init() {
   // ? pacman to enter and exit portal 
   // ? place big food on the screen 
   // ? add extra score when pacman eats big food
+  // ! make pacman move continuously
 
   // DOM Elements 
   const grid = document.querySelector('.grid')
   const scoreDisplay = document.querySelector('.score-text')
+  const startBtn = document.querySelector('.start-button')
 
   // Grid variables 
   const width = 18
@@ -25,6 +31,7 @@ function init() {
   const bigFoods = [19, 34, 289, 304]
   let pacmanIndex = 292
   let playerScore = 0
+  const direction = 'right'
 
   // * Function to create the grid
   function makeGrid() {
@@ -61,6 +68,19 @@ function init() {
   addFood()
 
   squares[pacmanIndex].classList.add('pacman') // controls where the player is based on the index of the square
+
+  // PACMAN MOVEMENT
+
+  // declare direction variable / maybe an object or array 
+  // add event listener and update/push whatever key is pressed down into the direction object/array 
+  // set a timer that kicks off the handlekeydown function and uses direction as the switch statement 
+
+
+
+  function startGame() {
+    // const startGameTimer = setInterval(dropBomb, 200)
+    console.log('starting')
+  }
 
   // * Function to make pacman move
   function handleKeyDown(e) {
@@ -120,7 +140,7 @@ function init() {
 
   // * Event listeners
   window.addEventListener('keydown', handleKeyDown)
-
+  startBtn.addEventListener('click', startGame)
 }
 
 window.addEventListener('DOMContentLoaded', init)
