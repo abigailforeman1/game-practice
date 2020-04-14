@@ -2,7 +2,7 @@ function init() {
 
   // CHALLENGES
   // placing multiple CSS classes onto the same grid square - simple fix of changing the order in CSS file
-  // pacman movement storing directions from handlekeydown events and using them when possible 
+  // pacman movement storing directions from handlekeydown events and using them when possible - able to store a proposed direction in a variable and use it when pacman hits a wall but trying to find a way to check the proposed direction at every square and if it's not possible continue with current direction - a solution for this was to only update the direction variable IF pacman could move in that direction 
 
   // ? make the grid 
   // ? make pacman 
@@ -14,7 +14,11 @@ function init() {
   // ? pacman to enter and exit portal 
   // ? place big food on the screen 
   // ? add extra score when pacman eats big food
-  // ! make pacman move continuously
+  // ? make pacman move continuously
+  // ! add ghosts to the grid
+  // ! make the ghosts move randomly
+  // ! if the ghosts and pacman collide GAME OVER!
+  // ! if all food is eaten WINNER!
 
   // DOM Elements 
   const grid = document.querySelector('.grid')
@@ -73,39 +77,54 @@ function init() {
 
   // PACMAN MOVEMENT
 
-  // declare direction variable / maybe an object or array 
-  // add event listener and update/push whatever key is pressed down into the direction object/array 
-  // set a timer that kicks off the handlekeydown function and uses direction as the switch statement 
+  // declare direction variable starting with 'right'
+  // when player presses arrow key that gets pushed to direction array
+  // check if pacman can move in direction index 1
+  // splice index 0 from the array
+  // if not move in direction index 0
+
+  // set direction to right
+  // update proposedDirection based on what player presses 
+  // try and use proposedDirection 
+  // if you can use it, update direction to be the same as proposedDirection 
+  // if can't use it use direction  
 
   function updateMovement(e) {
+
     switch (e.keyCode) {
       case 39:
-        direction = 'right'
+        if (!squares[pacmanIndex + 1].classList.contains('maze-wall')) {
+          direction = 'right'
+        }
         break
       case 37:
-        direction = 'left'
+        if (!squares[pacmanIndex - 1].classList.contains('maze-wall')) {
+          direction = 'left'
+        }
         break
       case 38:
-        direction = 'up'
+        if (!squares[pacmanIndex - width].classList.contains('maze-wall')) {
+          direction = 'up'
+        }
         break
       case 40:
-        direction = 'down'
-        break 
+        if (!squares[pacmanIndex + width].classList.contains('maze-wall')) {
+          direction = 'down'
+        }
+        break
       default:
         console.log('not valid!')
     }
-    console.log(direction)
   }
 
   function startGame() {
     running = true
-    startGameTimer = setInterval(pacmanMovement, 200)
+    startGameTimer = setInterval(pacmanMovement, 300)
     startBtn.classList.add('hidden')
   }
 
   // * Function to make pacman move
   function pacmanMovement() {
-    console.log(running)
 
     // 39 = right 
     // 37 = left
@@ -165,7 +184,6 @@ function init() {
   }
 
   // * Event listeners
-  // window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('keydown', updateMovement)
   startBtn.addEventListener('click', startGame)
 }
