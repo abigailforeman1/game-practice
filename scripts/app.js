@@ -3,7 +3,7 @@ function init() {
   // CHALLENGES
   // placing multiple CSS classes onto the same grid square - simple fix of changing the order in CSS file
   // pacman movement storing directions from handlekeydown events and using them when possible - able to store a proposed direction in a variable and use it when pacman hits a wall but trying to find a way to check the proposed direction at every square and if it's not possible continue with current direction - a solution for this was to only update the direction variable IF pacman could move in that direction 
-  // ghost movement 
+  // ghost movement !!!!! couldn't figure out for ages how to get them to move forward unless they hit a wall - am pleased with my ghost movement function though. Had a problem with ghosts repeating their movement back and forward and travelling through the walls - managed to figure out a solution using a filter on possible directions and then randomly choosing a direction from possible directions and only doing this when they hit a wall
 
   // THINGS TO ADD 
   // - make the superfood random
@@ -21,8 +21,9 @@ function init() {
   // ? add extra score when pacman eats big food
   // ? make pacman move continuously
   // ? add ghosts to the grid
-  // ! make the ghosts move randomly
-  // ! if the ghosts and pacman collide GAME OVER!
+  // ? make the ghosts move randomly
+  // ? if the ghosts and pacman collide GAME OVER!
+  // ! make ghosts travel through portal
   // ! if all food is eaten WINNER!
 
   // ---------------------------------------------- VARIABLES ---------------------------------------------- //
@@ -55,10 +56,10 @@ function init() {
   let orangeGhostMovementTimer
   let greenGhostMovementTimer
   const ghostDirectionOptions = [-width, width, -1, 1]
-  const redGhost = { startIndex: 55, currentIndex: 55, speed: 400, direction: width }
-  const blueGhost = { startIndex: 70, currentIndex: 70, speed: 600, direction: -1 }
-  const greenGhost = { startIndex: 156, currentIndex: 156, speed: 600, direction: 1 }
-  const orangeGhost = { startIndex: 149, currentIndex: 149, speed: 600, direction: -width }
+  const redGhost = { startIndex: 55, currentIndex: 55, speed: 400, direction: width, class: 'red-ghost' }
+  const blueGhost = { startIndex: 70, currentIndex: 70, speed: 600, direction: -1, class: 'blue-ghost' }
+  const greenGhost = { startIndex: 156, currentIndex: 156, speed: 500, direction: 1, class: 'green-ghost' }
+  const orangeGhost = { startIndex: 149, currentIndex: 149, speed: 350, direction: -width, class: 'orange-ghost' }
 
   // ---------------------------------------------- MAKING GRID ---------------------------------------------- //
 
@@ -113,10 +114,18 @@ function init() {
   function startGame() {
     // running = true
     startGameTimer = setInterval(pacmanMovement, 300)
-    redGhostMovementTimer = setInterval(redGhostMovement, redGhost.speed)
-    // blueGhostMovementTimer = setInterval(blueGhostMovement, blueGhost.speed)
-    // orangeGhostMovementTimer = setInterval(orangeGhostMovement, orangeGhost.speed)
-    // greenGhostMovementTimer = setInterval(greenGhostMovement, greenGhost.speed)
+    redGhostMovementTimer = setInterval(() => {
+      ghostMovement(redGhost)
+    }, redGhost.speed)
+    blueGhostMovementTimer = setInterval(() => {
+      ghostMovement(blueGhost)
+    }, blueGhost.speed)
+    orangeGhostMovementTimer = setInterval(() => {
+      ghostMovement(orangeGhost)
+    }, orangeGhost.speed)
+    greenGhostMovementTimer = setInterval(() => {
+      ghostMovement(greenGhost)
+    }, greenGhost.speed)
     startBtn.classList.add('hidden')
   }
 
@@ -191,7 +200,7 @@ function init() {
       pacmanIndex += width
     }
 
-    if (squares[pacmanIndex].classList.contains('red-ghost')) {
+    if ((squares[pacmanIndex].classList.contains('red-ghost')) || (squares[pacmanIndex].classList.contains('blue-ghost')) || (squares[pacmanIndex].classList.contains('orange-ghost')) || (squares[pacmanIndex].classList.contains('green-ghost'))) {
       alert('GAME OVER!')
       // running = false
       gameOver()
@@ -209,30 +218,31 @@ function init() {
   // repeat
 
   // * Function to make the red ghost move
-  function redGhostMovement() {
-    squares[redGhost.currentIndex].classList.remove('red-ghost')
-    console.log(redGhost.direction)
+  function ghostMovement(ghostColor) {
+    squares[ghostColor.currentIndex].classList.remove(ghostColor.class)
+
+    if (ghostColor.currentIndex === 161 && ghostColor.direction === 1) {
+      ghostColor.currentIndex -= width
+    } else if (ghostColor.currentIndex === 144 && ghostColor.direction === -1) {
+      ghostColor.currentIndex += width
+    }
 
     // * checks if the next square in the ghosts movement includes a wall, if it does - update the ghosts direction 
-    if (squares[redGhost.currentIndex + redGhost.direction].classList.contains('maze-wall')) {
-      updateRedGhostDirection()
+    if (squares[ghostColor.currentIndex + ghostColor.direction].classList.contains('maze-wall')) {
+      updateRedGhostDirection(ghostColor)
     } else {
-      redGhost.currentIndex += redGhost.direction
+      ghostColor.currentIndex += ghostColor.direction
     }
-    squares[redGhost.currentIndex].classList.add('red-ghost')
+    squares[ghostColor.currentIndex].classList.add(ghostColor.class)
   }
 
-  // check the 4 grid squares around the ghosts current position and filter to see if they return true to not including maze wall 
-  // store the true ones in a variable 
-  // math.random those grid squares 
-
-  function updateRedGhostDirection() {
-
+  // * Function to find ghosts new movement
+  function updateRedGhostDirection(ghostColor) {
     // finding the index of all 4 possible squares surrounding the ghost and putting them into an array 
-    const possibleSquareUp = redGhost.currentIndex - width
-    const possibleSquareDown = redGhost.currentIndex + width
-    const possibleSquareLeft = redGhost.currentIndex - 1
-    const possibleSquareRight = redGhost.currentIndex + 1
+    const possibleSquareUp = ghostColor.currentIndex - width
+    const possibleSquareDown = ghostColor.currentIndex + width
+    const possibleSquareLeft = ghostColor.currentIndex - 1
+    const possibleSquareRight = ghostColor.currentIndex + 1
     const possibleSquares = [possibleSquareUp, possibleSquareDown, possibleSquareLeft, possibleSquareRight]
     // filtering through these squares and removing any that contain a wall
     const availableGhostSquares = possibleSquares.filter(possibleSquare => {
@@ -241,12 +251,9 @@ function init() {
     // using Math.random to pick one of the available squares indexes
     const newIndex = availableGhostSquares[Math.floor(Math.random() * (availableGhostSquares.length))]
     // updating the ghosts current index with the new index
-    redGhost.currentIndex = newIndex
+    ghostColor.currentIndex = newIndex
     // using the index of the chosen available square from the possibleSquares array and updating the ghosts direction
-    redGhost.direction = ghostDirectionOptions[possibleSquares.indexOf(newIndex)]
-
-
-
+    ghostColor.direction = ghostDirectionOptions[possibleSquares.indexOf(newIndex)]
   }
 
   // ---------------------------------------------- EATING FOOD ---------------------------------------------- //
