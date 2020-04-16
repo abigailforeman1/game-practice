@@ -15,7 +15,7 @@ function init() {
   // ? place big food on the screen 
   // ? add extra score when pacman eats big food
   // ? make pacman move continuously
-  // ! add ghosts to the grid
+  // ? add ghosts to the grid
   // ! make the ghosts move randomly
   // ! if the ghosts and pacman collide GAME OVER!
   // ! if all food is eaten WINNER!
@@ -38,6 +38,14 @@ function init() {
   let direction = 'right'
   let running = false
   let startGameTimer
+  let redGhostMovementTimer
+  let blueGhostMovementTimer
+  let orangeGhostMovementTimer
+  let greenGhostMovementTimer
+  const redGhost = { startIndex: 55, speed: 200 }
+  const blueGhost = { startIndex: 70, speed: 300 }
+  const greenGhost = { startIndex: 156, speed: 250 }
+  const orangeGhost = { startIndex: 149, speed: 350 }
 
   // * Function to create the grid
   function makeGrid() {
@@ -73,7 +81,27 @@ function init() {
   }
   addFood()
 
+  // * Function to place ghosts in their start positions 
+  function placeGhosts() {
+    squares[redGhost.startIndex].classList.add('red-ghost')
+    squares[blueGhost.startIndex].classList.add('blue-ghost')
+    squares[orangeGhost.startIndex].classList.add('orange-ghost')
+    squares[greenGhost.startIndex].classList.add('green-ghost')
+  }
+  placeGhosts()
+
   squares[pacmanIndex].classList.add('pacman') // controls where the player is based on the index of the square
+
+  // * Function to kick off the timers for pacman movement and ghost movement
+  function startGame() {
+    running = true
+    startGameTimer = setInterval(pacmanMovement, 300)
+    redGhostMovementTimer = setInterval(redGhostMovement, redGhost.speed)
+    blueGhostMovementTimer = setInterval(blueGhostMovement, blueGhost.speed)
+    orangeGhostMovementTimer = setInterval(orangeGhostMovement, orangeGhost.speed)
+    greenGhostMovementTimer = setInterval(greenGhostMovement, greenGhost.speed)
+    startBtn.classList.add('hidden')
+  }
 
   // PACMAN MOVEMENT
 
@@ -89,8 +117,8 @@ function init() {
   // if you can use it, update direction to be the same as proposedDirection 
   // if can't use it use direction  
 
+  // * Function to store the players chosen direction for pacman
   function updateMovement(e) {
-
     switch (e.keyCode) {
       case 39:
         if (!squares[pacmanIndex + 1].classList.contains('maze-wall')) {
@@ -115,12 +143,6 @@ function init() {
       default:
         console.log('not valid!')
     }
-  }
-
-  function startGame() {
-    running = true
-    startGameTimer = setInterval(pacmanMovement, 300)
-    startBtn.classList.add('hidden')
   }
 
   // * Function to make pacman move
@@ -163,11 +185,38 @@ function init() {
     } else if (pacmanIndex === 144 && direction === 'left') {
       pacmanIndex += width
     }
+  }
 
-    // * a Boolean check to stop pacmans movement whenever running is set to false
-    if (running === false) {
-      clearInterval(startGameTimer)
-    }
+  // * Function to make the red ghost move
+  function redGhostMovement() {
+    squares[redGhost.startIndex].classList.remove('red-ghost')
+    redGhost.startIndex++
+    squares[redGhost.startIndex].classList.add('red-ghost')
+
+  }
+
+  // * Function to make the blue ghost move
+  function blueGhostMovement() {
+    squares[blueGhost.startIndex].classList.remove('blue-ghost')
+    blueGhost.startIndex--
+    squares[blueGhost.startIndex].classList.add('blue-ghost')
+
+  }
+
+  // * Function to make the orange ghost move
+  function orangeGhostMovement() {
+    squares[orangeGhost.startIndex].classList.remove('orange-ghost')
+    orangeGhost.startIndex++
+    squares[orangeGhost.startIndex].classList.add('orange-ghost')
+
+  }
+
+  // * Function to make the green ghost move
+  function greenGhostMovement() {
+    squares[greenGhost.startIndex].classList.remove('green-ghost')
+    greenGhost.startIndex--
+    squares[greenGhost.startIndex].classList.add('green-ghost')
+
   }
 
   // * Function to check for pink food where pacman moves and update score
@@ -181,6 +230,15 @@ function init() {
       scoreDisplay.innerHTML = playerScore
       squares[pacmanIndex].classList.remove('big-food')
     }
+  }
+
+  // * a Boolean check to stop pacmans and ghosts movement whenever running is set to false
+  if (running === false) {
+    clearInterval(startGameTimer)
+    clearInterval(redGhostMovementTimer)
+    clearInterval(blueGhostMovementTimer)
+    clearInterval(orangeGhostMovementTimer)
+    clearInterval(greenGhostMovementTimer)
   }
 
   // * Event listeners

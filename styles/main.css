@@ -52,6 +52,38 @@ div.grid-item.big-food {
   margin: 10px;
 }
 
+div.grid-item.blue-ghost {
+  background-color: blue;
+  border-radius: 25%;
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+}
+
+div.grid-item.orange-ghost {
+  background-color: orange;
+  border-radius: 25%;
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+}
+
+div.grid-item.green-ghost {
+  background-color: greenyellow;
+  border-radius: 25%;
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+}
+
+div.grid-item.red-ghost {
+  background-color: red;
+  border-radius: 25%;
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+}
+
 div.grid-item.pacman {
   background-color: yellow;
   border-radius: 100%;
