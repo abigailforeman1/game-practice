@@ -23,8 +23,11 @@ function init() {
   // ? add ghosts to the grid
   // ? make the ghosts move randomly
   // ? if the ghosts and pacman collide GAME OVER!
-  // ! make ghosts travel through portal
-  // ! if all food is eaten WINNER!
+  // ? make ghosts travel through portal
+  // ? if big food is eaten make ghosts slow down
+  // ? if all food is eaten WINNER!
+  // ! change colour of ghosts when pacman eats big food 
+  // ! pacman eat blue ghost and send them back to the start
 
   // ---------------------------------------------- VARIABLES ---------------------------------------------- //
 
@@ -56,10 +59,14 @@ function init() {
   let orangeGhostMovementTimer
   let greenGhostMovementTimer
   const ghostDirectionOptions = [-width, width, -1, 1]
-  const redGhost = { startIndex: 55, currentIndex: 55, speed: 400, direction: width, class: 'red-ghost' }
-  const blueGhost = { startIndex: 70, currentIndex: 70, speed: 600, direction: -1, class: 'blue-ghost' }
-  const greenGhost = { startIndex: 156, currentIndex: 156, speed: 500, direction: 1, class: 'green-ghost' }
-  const orangeGhost = { startIndex: 149, currentIndex: 149, speed: 350, direction: -width, class: 'orange-ghost' }
+  const redGhost = { startIndex: 19, currentIndex: 19, speed: 400, scatterSpeed: 1000, direction: width, class: 'red-ghost', scatterColor: false }
+  const blueGhost = { startIndex: 34, currentIndex: 34, speed: 600, scatterSpeed: 1000, direction: -1, class: 'blue-ghost', scatterColor: false }
+  const greenGhost = { startIndex: 88, currentIndex: 88, speed: 500, scatterSpeed: 1000, direction: 1, class: 'green-ghost', scatterColor: false }
+  const orangeGhost = { startIndex: 73, currentIndex: 73, speed: 350, scatterSpeed: 1000, direction: -width, class: 'orange-ghost', scatterColor: false }
+  let redGhostScatterTimer
+  let blueGhostScatterTimer
+  let orangeGhostScatterTimer
+  let greenGhostScatterTimer
 
   // ---------------------------------------------- MAKING GRID ---------------------------------------------- //
 
@@ -129,6 +136,21 @@ function init() {
     startBtn.classList.add('hidden')
   }
 
+  function restartGhostNormalMovement() {
+    redGhostMovementTimer = setInterval(() => {
+      ghostMovement(redGhost)
+    }, redGhost.speed)
+    blueGhostMovementTimer = setInterval(() => {
+      ghostMovement(blueGhost)
+    }, blueGhost.speed)
+    orangeGhostMovementTimer = setInterval(() => {
+      ghostMovement(orangeGhost)
+    }, orangeGhost.speed)
+    greenGhostMovementTimer = setInterval(() => {
+      ghostMovement(greenGhost)
+    }, greenGhost.speed)
+  }
+
   // ---------------------------------------------- PACMAN MOVEMENT ---------------------------------------------- //
 
   // * Function to store the players chosen direction for pacman
@@ -174,7 +196,7 @@ function init() {
         }
         break
       case 'left':
-        if (!squares[pacmanIndex - 1].classList.contains('maze-wall')) { 
+        if (!squares[pacmanIndex - 1].classList.contains('maze-wall')) {
           pacmanIndex--
         }
         break
@@ -219,8 +241,10 @@ function init() {
 
   // * Function to make the red ghost move
   function ghostMovement(ghostColor) {
+    squares[ghostColor.currentIndex].classList.remove('scatter-ghost')
     squares[ghostColor.currentIndex].classList.remove(ghostColor.class)
 
+    // * checks ghosts position for portal
     if (ghostColor.currentIndex === 161 && ghostColor.direction === 1) {
       ghostColor.currentIndex -= width
     } else if (ghostColor.currentIndex === 144 && ghostColor.direction === -1) {
@@ -234,6 +258,18 @@ function init() {
       ghostColor.currentIndex += ghostColor.direction
     }
     squares[ghostColor.currentIndex].classList.add(ghostColor.class)
+
+    // * checks if ghost scatter mode is on and adds scatter class 
+    if (ghostColor.scatterColor === true) {
+      squares[ghostColor.currentIndex].classList.add('scatter-ghost')
+    }
+
+    // * checking for pacman and ghost colision 
+    if ((squares[ghostColor.currentIndex].classList.contains('pacman'))) {
+      alert('GAME OVER 2!')
+      // running = false
+      gameOver()
+    }
   }
 
   // * Function to find ghosts new movement
@@ -256,6 +292,40 @@ function init() {
     ghostColor.direction = ghostDirectionOptions[possibleSquares.indexOf(newIndex)]
   }
 
+  // * Function to slow down the ghosts when Pacman eats big food
+  function ghostsSlow() {
+    console.log('ghosts slow triggered')
+    clearGhostTimers()
+
+    redGhostScatterTimer = setInterval(() => {
+      ghostMovement(redGhost)
+    }, redGhost.scatterSpeed)
+    blueGhostScatterTimer = setInterval(() => {
+      ghostMovement(blueGhost)
+    }, blueGhost.scatterSpeed)
+    orangeGhostScatterTimer = setInterval(() => {
+      ghostMovement(orangeGhost)
+    }, orangeGhost.scatterSpeed)
+    greenGhostScatterTimer = setInterval(() => {
+      ghostMovement(greenGhost)
+    }, greenGhost.scatterSpeed)
+
+    setTimeout(clearScatterTimer, 5000)
+  }
+
+  function clearScatterTimer() {
+    console.log('clear scatter countdown')
+    redGhost.scatterColor = false
+    blueGhost.scatterColor = false
+    orangeGhost.scatterColor = false
+    greenGhost.scatterColor = false
+    clearInterval(redGhostScatterTimer)
+    clearInterval(blueGhostScatterTimer)
+    clearInterval(orangeGhostScatterTimer)
+    clearInterval(greenGhostScatterTimer)
+    restartGhostNormalMovement()
+  }
+
   // ---------------------------------------------- EATING FOOD ---------------------------------------------- //
 
   // * Function to check for pink food where pacman moves and update score
@@ -266,12 +336,32 @@ function init() {
       squares[pacmanIndex].classList.remove('food')
     } else if (squares[pacmanIndex].classList.contains('big-food')) {
       playerScore += 50
+      squares[redGhost.currentIndex].classList.add('scatter-ghost')
+      squares[blueGhost.currentIndex].classList.add('scatter-ghost')
+      squares[greenGhost.currentIndex].classList.add('scatter-ghost')
+      squares[orangeGhost.currentIndex].classList.add('scatter-ghost')
+      redGhost.scatterColor = true
+      blueGhost.scatterColor = true
+      orangeGhost.scatterColor = true
+      greenGhost.scatterColor = true
+      ghostsSlow()
       scoreDisplay.innerHTML = playerScore
       squares[pacmanIndex].classList.remove('big-food')
+    }
+    if (!squares.some(square => square.classList.contains('food'))) {
+      console.log('winner!')
     }
   }
 
   // ---------------------------------------------- WIN CONDITION / GAME OVER ---------------------------------------------- //
+
+  // * Function to clear normal ghost movement timers 
+  function clearGhostTimers() {
+    clearInterval(redGhostMovementTimer)
+    clearInterval(blueGhostMovementTimer)
+    clearInterval(orangeGhostMovementTimer)
+    clearInterval(greenGhostMovementTimer)
+  }
 
   // * Function to clear timers when player loses
   function gameOver() {
@@ -280,6 +370,7 @@ function init() {
     clearInterval(blueGhostMovementTimer)
     clearInterval(orangeGhostMovementTimer)
     clearInterval(greenGhostMovementTimer)
+    playerScore = 0
   }
 
   // * Event listeners
@@ -288,3 +379,43 @@ function init() {
 }
 
 window.addEventListener('DOMContentLoaded', init)
+
+
+
+
+
+
+
+// // Local storage notes 
+// // Create your variables to get your data from local storage 
+// // The first one allows you to get the data from local storage so that you can manipulate it however you need to and returns null if there is no data available in local storage
+// // The second one gives you a copy of that data which you can display in the browser however you choose to
+// let storedHiScore = localStorage.getItem('storedHiScore') ? JSON.parse(localStorage.getItem('storedHiScore')) : null
+// const data = JSON.parse(localStorage.getItem('storedHiScore'))
+// // Function to set up your page to display your high score  
+// function hiScoreCreate() {
+//   const hiScore = document.createElement('div')
+//   hiScore.classList.add('hi-score')
+//   hiScore.innerHTML = storedHiScore
+//   eachScore.appendChild(hiScore)
+// }
+// // Function to store your score into local storage - it's up to you at what point in the game to call this function
+// function storeScores() {
+//   if (points > storedHiScore) { // if the current points value is higher than the value stored in local storage
+//     storedHiScore = points // assign storedHiScore to equal the current value of points
+//     localStorage.setItem('storedHiScore', JSON.stringify(storedHiScore)) // set storedHiScore into local storage
+//     // this is a key value pair - you are setting the key above and then giving it the value of your latest 
+//     // high score
+//     hiScoreCreate() // this will enable you to display the score immediately if needed
+//   }
+// }
+// // Create a function to check if there is any data in local storage when the page is loaded, if so - 
+// // display this data using the hiScoreCreate function, otherwise - do nothing.
+// // Invoke this function immediately so that it is run as soon as the DOM content is loaded   
+// function displayHiScore() {
+//   data ? hiScoreCreate(data) : null
+// }
+// displayHiScore()
+// // If you ever want to reset the data - you can do this in the console - localStorage.clear()
+// // or you can create a function and invoke localStorage.clear() within it - if you want the user to have 
+// // control over what is stored. 

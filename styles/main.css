@@ -84,6 +84,10 @@ div.grid-item.red-ghost {
   margin: 5px;
 }
 
+div.grid-item.scatter-ghost {
+  background-color: cornflowerblue;
+}
+
 div.grid-item.pacman {
   background-color: yellow;
   border-radius: 100%;
