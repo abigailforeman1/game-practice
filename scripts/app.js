@@ -26,8 +26,8 @@ function init() {
   // ? make ghosts travel through portal
   // ? if big food is eaten make ghosts slow down
   // ? if all food is eaten WINNER!
-  // ! change colour of ghosts when pacman eats big food 
-  // ! pacman eat blue ghost and send them back to the start
+  // ? change colour of ghosts when pacman eats big food 
+  // ! pacman eat blue ghost and send them back to the start and gets points 
 
   // ---------------------------------------------- VARIABLES ---------------------------------------------- //
 
@@ -43,8 +43,8 @@ function init() {
   // Game variables  
   // grid
   const squares = []
-  const mazeWalls = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 27, 35, 36, 38, 39, 40, 41, 42, 44, 45, 47, 48, 49, 50, 51, 53, 54, 56, 57, 58, 59, 60, 62, 63, 65, 66, 67, 68, 69, 71, 72, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 107, 108, 114, 119, 125, 126, 127, 128, 129, 130, 132, 134, 135, 137, 139, 140, 141, 142, 143, 152, 153, 162, 163, 164, 165, 166, 168, 173, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 186, 187, 188, 189, 190, 191, 193, 194, 195, 196, 197, 198, 206, 207, 215, 216, 218, 219, 220, 222, 224, 225, 227, 229, 230, 231, 233, 234, 236, 237, 238, 240, 245, 247, 248, 249, 251, 252, 258, 259, 260, 261, 262, 263, 269, 270, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 287, 288, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323]
-  const bigFoods = [19, 34, 289, 304]
+  const mazeWalls = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 27, 35, 36, 38, 39, 40, 41, 42, 44, 45, 47, 48, 49, 50, 51, 53, 54, 56, 57, 58, 59, 60, 62, 63, 65, 66, 67, 68, 69, 71, 72, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 107, 108, 114, 119, 125, 126, 127, 128, 130, 139, 141, 142, 143, 148, 157, 162, 163, 164, 165, 166, 168, 173, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 186, 187, 188, 189, 190, 191, 193, 194, 195, 196, 197, 198, 206, 207, 215, 216, 218, 219, 220, 222, 224, 225, 227, 229, 230, 231, 233, 234, 236, 237, 238, 240, 245, 247, 248, 249, 251, 252, 258, 259, 260, 261, 262, 263, 269, 270, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 287, 288, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323]
+  const bigFoods = [109, 124, 289, 304]
 
   // pacman info
   let pacmanIndex = 292
@@ -59,10 +59,10 @@ function init() {
   let orangeGhostMovementTimer
   let greenGhostMovementTimer
   const ghostDirectionOptions = [-width, width, -1, 1]
-  const redGhost = { startIndex: 19, currentIndex: 19, speed: 400, scatterSpeed: 1000, direction: width, class: 'red-ghost', scatterColor: false }
-  const blueGhost = { startIndex: 34, currentIndex: 34, speed: 600, scatterSpeed: 1000, direction: -1, class: 'blue-ghost', scatterColor: false }
-  const greenGhost = { startIndex: 88, currentIndex: 88, speed: 500, scatterSpeed: 1000, direction: 1, class: 'green-ghost', scatterColor: false }
-  const orangeGhost = { startIndex: 73, currentIndex: 73, speed: 350, scatterSpeed: 1000, direction: -width, class: 'orange-ghost', scatterColor: false }
+  const redGhost = { startIndex: 134, currentIndex: 134, speed: 400, scatterSpeed: 1000, direction: -1, class: 'red-ghost', scatterColor: false }
+  const blueGhost = { startIndex: 135, currentIndex: 135, speed: 600, scatterSpeed: 1000, direction: 1, class: 'blue-ghost', scatterColor: false }
+  const greenGhost = { startIndex: 152, currentIndex: 152, speed: 500, scatterSpeed: 1000, direction: -1, class: 'green-ghost', scatterColor: false }
+  const orangeGhost = { startIndex: 153, currentIndex: 153, speed: 350, scatterSpeed: 1000, direction: 1, class: 'orange-ghost', scatterColor: false }
   let redGhostScatterTimer
   let blueGhostScatterTimer
   let orangeGhostScatterTimer
@@ -97,6 +97,11 @@ function init() {
         squares[i].classList.add('food')
       }
     }
+    squares[134].classList.remove('food')
+    squares[135].classList.remove('food')
+    squares[152].classList.remove('food')
+    squares[153].classList.remove('food')
+
     bigFoods.forEach((bigFood) => {
       squares[bigFood].classList.add('big-food')
       squares[bigFood].classList.remove('food')
@@ -222,11 +227,51 @@ function init() {
       pacmanIndex += width
     }
 
-    if ((squares[pacmanIndex].classList.contains('red-ghost')) || (squares[pacmanIndex].classList.contains('blue-ghost')) || (squares[pacmanIndex].classList.contains('orange-ghost')) || (squares[pacmanIndex].classList.contains('green-ghost'))) {
-      alert('GAME OVER!')
+    if ((redGhost.scatterColor === false &&
+      blueGhost.scatterColor === false &&
+      orangeGhost.scatterColor === false &&
+      greenGhost.scatterColor === false) &&
+      ((squares[pacmanIndex].classList.contains('red-ghost')) ||
+      (squares[pacmanIndex].classList.contains('blue-ghost')) ||
+      (squares[pacmanIndex].classList.contains('orange-ghost')) ||
+      (squares[pacmanIndex].classList.contains('green-ghost')))) {
+      alert('THE GHOST GOT YOU!')
       // running = false
       gameOver()
-    }
+    } else if ((redGhost.scatterColor === true &&
+      blueGhost.scatterColor === true &&
+      orangeGhost.scatterColor === true &&
+      greenGhost.scatterColor === true) &&
+      ((squares[pacmanIndex].classList.contains('red-ghost')) ||
+      (squares[pacmanIndex].classList.contains('blue-ghost')) ||
+      (squares[pacmanIndex].classList.contains('orange-ghost')) ||
+      (squares[pacmanIndex].classList.contains('green-ghost')))) {
+      playerScore += 200
+      // * finding the ghost that pacman just ate
+      if (redGhost.currentIndex === pacmanIndex) {
+        squares[redGhost.currentIndex].classList.remove('red-ghost')
+        squares[redGhost.currentIndex].classList.remove('scatter-ghost')
+        clearInterval(redGhostScatterTimer)
+        redGhost.currentIndex = redGhost.startIndex
+        squares[redGhost.currentIndex].classList.add('red-ghost')
+      } else if (blueGhost.currentIndex === pacmanIndex) {
+        squares[blueGhost.currentIndex].classList.remove('blue-ghost')
+        squares[blueGhost.currentIndex].classList.remove('scatter-ghost')
+        clearInterval(blueGhostScatterTimer)
+        blueGhost.currentIndex = blueGhost.startIndex
+        squares[blueGhost.currentIndex].classList.add('blue-ghost')
+      } else if (greenGhost.currentIndex === pacmanIndex) {
+        squares[greenGhost.currentIndex].classList.remove('green-ghost')
+        squares[greenGhost.currentIndex].classList.remove('scatter-ghost')
+        clearInterval(greenGhostScatterTimer)
+        greenGhost.currentIndex = greenGhost.startIndex
+      } else if (orangeGhost.currentIndex === pacmanIndex) {
+        squares[orangeGhost.currentIndex].classList.remove('orange-ghost')
+        squares[orangeGhost.currentIndex].classList.remove('scatter-ghost')
+        clearInterval(orangeGhostScatterTimer)
+        orangeGhost.currentIndex = orangeGhost.startIndex
+      }
+    } 
   }
 
   // ---------------------------------------------- GHOST MOVEMENT ---------------------------------------------- //
@@ -241,6 +286,7 @@ function init() {
 
   // * Function to make the red ghost move
   function ghostMovement(ghostColor) {
+
     squares[ghostColor.currentIndex].classList.remove('scatter-ghost')
     squares[ghostColor.currentIndex].classList.remove(ghostColor.class)
 
@@ -265,11 +311,11 @@ function init() {
     }
 
     // * checking for pacman and ghost colision 
-    if ((squares[ghostColor.currentIndex].classList.contains('pacman'))) {
+    if ((squares[ghostColor.currentIndex].classList.contains('pacman')) && ghostColor.scatterColor === false) {
       alert('GAME OVER 2!')
       // running = false
       gameOver()
-    }
+    } 
   }
 
   // * Function to find ghosts new movement
@@ -294,7 +340,6 @@ function init() {
 
   // * Function to slow down the ghosts when Pacman eats big food
   function ghostsSlow() {
-    console.log('ghosts slow triggered')
     clearGhostTimers()
 
     redGhostScatterTimer = setInterval(() => {
@@ -314,7 +359,6 @@ function init() {
   }
 
   function clearScatterTimer() {
-    console.log('clear scatter countdown')
     redGhost.scatterColor = false
     blueGhost.scatterColor = false
     orangeGhost.scatterColor = false
@@ -349,7 +393,7 @@ function init() {
       squares[pacmanIndex].classList.remove('big-food')
     }
     if (!squares.some(square => square.classList.contains('food'))) {
-      console.log('winner!')
+      console.log('WINNER!')
     }
   }
 

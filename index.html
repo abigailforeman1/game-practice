@@ -5,18 +5,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <script type="text/javascript" src="scripts/app.js"></script>
-  <link rel="stylesheet" href="styles/main.css">
+  <script type="text/javascript" src="./scripts/app.js"></script>
+  <link rel="stylesheet" href="./styles/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <title>GAME 2</title>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
+  <script src="./scripts/sketch.js"></script>
 </head>
 
 <body>
   <main>
     <div class="header-wrapper">
-      <p>SCORE: <span class="score-text">00</span></p>
-      <button class="start-button">START GAME</button>
+      <p class="current-score">SCORE: <span class="score-text">00</span></p>
+      <p class="high-score">HIGH SCORE: <span class="highscore-text"></span></p>
     </div>
     <div class="grid"></div>
+    <div class="footer-wrapper">
+      <button class="start-button">START GAME</button>
+    </div>
   </main>
 </body>
 
