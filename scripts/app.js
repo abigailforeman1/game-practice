@@ -59,10 +59,10 @@ function init() {
   let orangeGhostMovementTimer
   let greenGhostMovementTimer
   const ghostDirectionOptions = [-width, width, -1, 1]
-  const redGhost = { startIndex: 134, currentIndex: 134, speed: 400, scatterSpeed: 1000, direction: -1, class: 'red-ghost', scatterColor: false }
-  const blueGhost = { startIndex: 135, currentIndex: 135, speed: 600, scatterSpeed: 1000, direction: 1, class: 'blue-ghost', scatterColor: false }
-  const greenGhost = { startIndex: 152, currentIndex: 152, speed: 500, scatterSpeed: 1000, direction: -1, class: 'green-ghost', scatterColor: false }
-  const orangeGhost = { startIndex: 153, currentIndex: 153, speed: 350, scatterSpeed: 1000, direction: 1, class: 'orange-ghost', scatterColor: false }
+  const redGhost = { startIndex: 134, currentIndex: 134, speed: 400, scatterSpeed: 1000, ogDirection: -1, direction: -1, class: 'red-ghost', scatterColor: false }
+  const blueGhost = { startIndex: 135, currentIndex: 135, speed: 600, scatterSpeed: 1000, ogDirection: 1, direction: 1, class: 'blue-ghost', scatterColor: false }
+  const greenGhost = { startIndex: 152, currentIndex: 152, speed: 500, scatterSpeed: 1000, ogDirection: -1, direction: -1, class: 'green-ghost', scatterColor: false }
+  const orangeGhost = { startIndex: 153, currentIndex: 153, speed: 350, scatterSpeed: 1000, ogDirection: 1, direction: 1, class: 'orange-ghost', scatterColor: false }
   let redGhostScatterTimer
   let blueGhostScatterTimer
   let orangeGhostScatterTimer
@@ -253,23 +253,29 @@ function init() {
         squares[redGhost.currentIndex].classList.remove('scatter-ghost')
         clearInterval(redGhostScatterTimer)
         redGhost.currentIndex = redGhost.startIndex
+        redGhost.direction = redGhost.ogDirection
         squares[redGhost.currentIndex].classList.add('red-ghost')
       } else if (blueGhost.currentIndex === pacmanIndex) {
         squares[blueGhost.currentIndex].classList.remove('blue-ghost')
         squares[blueGhost.currentIndex].classList.remove('scatter-ghost')
         clearInterval(blueGhostScatterTimer)
         blueGhost.currentIndex = blueGhost.startIndex
+        blueGhost.direction = blueGhost.ogDirection
         squares[blueGhost.currentIndex].classList.add('blue-ghost')
       } else if (greenGhost.currentIndex === pacmanIndex) {
         squares[greenGhost.currentIndex].classList.remove('green-ghost')
         squares[greenGhost.currentIndex].classList.remove('scatter-ghost')
         clearInterval(greenGhostScatterTimer)
         greenGhost.currentIndex = greenGhost.startIndex
+        greenGhost.direction = greenGhost.ogDirection
+        squares[greenGhost.currentIndex].classList.add('green-ghost')
       } else if (orangeGhost.currentIndex === pacmanIndex) {
         squares[orangeGhost.currentIndex].classList.remove('orange-ghost')
         squares[orangeGhost.currentIndex].classList.remove('scatter-ghost')
         clearInterval(orangeGhostScatterTimer)
         orangeGhost.currentIndex = orangeGhost.startIndex
+        orangeGhost.direction = orangeGhost.ogDirection
+        squares[orangeGhost.currentIndex].classList.add('orange-ghost')
       }
     } 
   }
