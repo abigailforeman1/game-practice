@@ -6,15 +6,51 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100vh;
+  width: 100vw;
 }
 
 body {
   display: flex;
   align-items: center;
-  justify-content: center;
   height: 100%;
   font-family: 'Press Start 2P', cursive;
+  font-size: 18px;
+}
+
+.wrapper {
+  display: flex;
+  width: 100vw;
+}
+
+.rules-section {
+  flex: 0 0 350px;
+  align-self: center;
+  padding: 30px;
+}
+
+.rules-header {
   font-size: 20px;
+}
+
+.rules {
+  color: rgb(180, 122, 234);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: bolder;
+}
+
+.game-section {
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.grid-wrapper {
+  display: flex;
+  justify-content: space-around;
+}
+
+.blank-section {
+  flex: 0 0 350px;
 }
 
 .start-button {
@@ -49,7 +85,15 @@ body {
 
 .header-wrapper {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+}
+
+.current-score {
+  margin: 20px 50px;
+}
+
+.high-score {
+  margin: 20px 50px;
 }
 
 .footer-wrapper {
@@ -131,13 +175,39 @@ div.grid-item.scatter-ghost {
 }
 
 div.grid-item.pacman {
-  background-color: rgb(255, 255, 0);
+  background-color: rgb(255, 238, 0);
   border-radius: 100%;
   width: 35px;
   height: 35px;
   margin: 0px;
+  clip-path: polygon(0 50%, 0 64%, 4% 76%, 11% 87%, 23% 94%, 36% 98%, 48% 100%, 55% 99%, 65% 96%, 75% 91%, 85% 84%, 27% 51%, 86% 17%, 80% 11%, 72% 5%, 62% 2%, 49% 0, 36% 1%, 25% 3%, 14% 9%, 9% 16%, 3% 26%, 0 37%);
+}
+
+.pacman-animation {
+  animation: eat 0.6s infinite;
+}
+
+@keyframes eat {
+  0% {
+    clip-path: circle(50% at 50% 50%);
+  }
+  100% {
+    clip-path: polygon(0 50%, 0 64%, 4% 76%, 11% 87%, 23% 94%, 36% 98%, 48% 100%, 55% 99%, 65% 96%, 75% 91%, 85% 84%, 27% 51%, 86% 17%, 80% 11%, 72% 5%, 62% 2%, 49% 0, 36% 1%, 25% 3%, 14% 9%, 9% 16%, 3% 26%, 0 37%);
+  }
+}
+
+.up {
+  transform: rotate(270deg);
+}
+
+.down {
+  transform: rotate(90deg);
+}
+
+.left {
+  transform: rotate(180deg);
 }
 
 .hidden {
-  display: none;
+  visibility: hidden;
 }

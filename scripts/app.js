@@ -6,8 +6,9 @@ function init() {
   // ghost movement !!!!! couldn't figure out for ages how to get them to move forward unless they hit a wall - am pleased with my ghost movement function though. Had a problem with ghosts repeating their movement back and forward and travelling through the walls - managed to figure out a solution using a filter on possible directions and then randomly choosing a direction from possible directions and only doing this when they hit a wall
 
   // THINGS TO ADD 
-  // - make the superfood random
   // - sounds 
+  // - add regex for practice 
+  // - local storage for highscore
 
   // ? make the grid 
   // ? make pacman 
@@ -27,13 +28,16 @@ function init() {
   // ? if big food is eaten make ghosts slow down
   // ? if all food is eaten WINNER!
   // ? change colour of ghosts when pacman eats big food 
-  // ! pacman eat blue ghost and send them back to the start and gets points 
+  // ? pacman eat blue ghost and send them back to the start and gets points
+  // ? make sure ghosts timers are working ok
+  // ? change pacman direction
 
   // ---------------------------------------------- VARIABLES ---------------------------------------------- //
 
   // DOM Elements 
   const grid = document.querySelector('.grid')
   const scoreDisplay = document.querySelector('.score-text')
+  const highScoreDisplay = document.querySelector('.highscore-text')
   const startBtn = document.querySelector('.start-button')
 
   // Grid variables 
@@ -45,6 +49,10 @@ function init() {
   const squares = []
   const mazeWalls = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 26, 27, 35, 36, 38, 39, 40, 41, 42, 44, 45, 47, 48, 49, 50, 51, 53, 54, 56, 57, 58, 59, 60, 62, 63, 65, 66, 67, 68, 69, 71, 72, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 107, 108, 114, 119, 125, 126, 127, 128, 130, 139, 141, 142, 143, 148, 157, 162, 163, 164, 165, 166, 168, 173, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 186, 187, 188, 189, 190, 191, 193, 194, 195, 196, 197, 198, 206, 207, 215, 216, 218, 219, 220, 222, 224, 225, 227, 229, 230, 231, 233, 234, 236, 237, 238, 240, 245, 247, 248, 249, 251, 252, 258, 259, 260, 261, 262, 263, 269, 270, 272, 273, 274, 275, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 287, 288, 305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323]
   const bigFoods = [109, 124, 289, 304]
+
+  // scoring
+  let storedHiScore = localStorage.getItem('storedHiScore') ? JSON.parse(localStorage.getItem('storedHiScore')) : null
+  const data = JSON.parse(localStorage.getItem('storedHiScore'))
 
   // pacman info
   let pacmanIndex = 292
@@ -59,14 +67,73 @@ function init() {
   let orangeGhostMovementTimer
   let greenGhostMovementTimer
   const ghostDirectionOptions = [-width, width, -1, 1]
-  const redGhost = { startIndex: 134, currentIndex: 134, speed: 400, scatterSpeed: 1000, ogDirection: -1, direction: -1, class: 'red-ghost', scatterColor: false }
-  const blueGhost = { startIndex: 135, currentIndex: 135, speed: 600, scatterSpeed: 1000, ogDirection: 1, direction: 1, class: 'blue-ghost', scatterColor: false }
-  const greenGhost = { startIndex: 152, currentIndex: 152, speed: 500, scatterSpeed: 1000, ogDirection: -1, direction: -1, class: 'green-ghost', scatterColor: false }
-  const orangeGhost = { startIndex: 153, currentIndex: 153, speed: 350, scatterSpeed: 1000, ogDirection: 1, direction: 1, class: 'orange-ghost', scatterColor: false }
+  const redGhost = {
+    startIndex: 134,
+    currentIndex: 134,
+    speed: 400,
+    scatterSpeed: 1000,
+    ogDirection: -1,
+    direction: -1,
+    class: 'red-ghost',
+    scatterColor: false
+  }
+  const blueGhost = {
+    startIndex: 135,
+    currentIndex: 135,
+    speed: 600,
+    scatterSpeed: 1000,
+    ogDirection: 1,
+    direction: 1,
+    class: 'blue-ghost',
+    scatterColor: false
+  }
+  const greenGhost = {
+    startIndex: 152,
+    currentIndex: 152,
+    speed: 500,
+    scatterSpeed: 1000,
+    ogDirection: -1,
+    direction: -1,
+    class: 'green-ghost',
+    scatterColor: false
+  }
+  const orangeGhost = {
+    startIndex: 153,
+    currentIndex: 153,
+    speed: 350,
+    scatterSpeed: 1000,
+    ogDirection: 1,
+    direction: 1,
+    class: 'orange-ghost',
+    scatterColor: false
+  }
   let redGhostScatterTimer
   let blueGhostScatterTimer
   let orangeGhostScatterTimer
   let greenGhostScatterTimer
+
+  // ---------------------------------------------- HIGHSCORE W/ LOCAL STORAGE ---------------------------------------------- //
+
+  // called straight away 
+  displayHiScore()
+
+  function hiScoreCreate() {
+    highScoreDisplay.textContent = storedHiScore
+  }
+
+  // called by gameOver
+  function storeScores() {
+    console.log(storedHiScore)
+    if (playerScore > storedHiScore) { 
+      storedHiScore = playerScore 
+      localStorage.setItem('storedHiScore', JSON.stringify(storedHiScore)) 
+      hiScoreCreate()
+    }
+  }
+
+  function displayHiScore() {
+    data ? hiScoreCreate(data) : null
+  }
 
   // ---------------------------------------------- MAKING GRID ---------------------------------------------- //
 
@@ -81,6 +148,9 @@ function init() {
     }
   }
   makeGrid()
+
+  highScoreDisplay.innerHTML = '00'
+  squares[pacmanIndex].classList.add('pacman') // controls where the player is based on the index of the square
 
   // * Function to add maze walls 
   function makeWalls() {
@@ -118,8 +188,6 @@ function init() {
   }
   placeGhosts()
 
-  squares[pacmanIndex].classList.add('pacman') // controls where the player is based on the index of the square
-
   // ---------------------------------------------- STARTING THE GAME ---------------------------------------------- //
 
   // * Function to kick off the timers for pacman movement and ghost movement
@@ -139,6 +207,8 @@ function init() {
       ghostMovement(greenGhost)
     }, greenGhost.speed)
     startBtn.classList.add('hidden')
+
+    // pacmanToAnimate.classList.add('pacman-animation')
   }
 
   function restartGhostNormalMovement() {
@@ -218,6 +288,10 @@ function init() {
     }
     squares.forEach(square => square.classList.remove('pacman'))
     squares[pacmanIndex].classList.add('pacman')
+
+    squares.forEach(square => square.classList.remove(direction))
+    squares[pacmanIndex].classList.add(direction)
+
     eatFood()
 
     // * checking if pacman reaches the portal 
@@ -232,9 +306,9 @@ function init() {
       orangeGhost.scatterColor === false &&
       greenGhost.scatterColor === false) &&
       ((squares[pacmanIndex].classList.contains('red-ghost')) ||
-      (squares[pacmanIndex].classList.contains('blue-ghost')) ||
-      (squares[pacmanIndex].classList.contains('orange-ghost')) ||
-      (squares[pacmanIndex].classList.contains('green-ghost')))) {
+        (squares[pacmanIndex].classList.contains('blue-ghost')) ||
+        (squares[pacmanIndex].classList.contains('orange-ghost')) ||
+        (squares[pacmanIndex].classList.contains('green-ghost')))) {
       alert('THE GHOST GOT YOU!')
       // running = false
       gameOver()
@@ -243,9 +317,9 @@ function init() {
       orangeGhost.scatterColor === true &&
       greenGhost.scatterColor === true) &&
       ((squares[pacmanIndex].classList.contains('red-ghost')) ||
-      (squares[pacmanIndex].classList.contains('blue-ghost')) ||
-      (squares[pacmanIndex].classList.contains('orange-ghost')) ||
-      (squares[pacmanIndex].classList.contains('green-ghost')))) {
+        (squares[pacmanIndex].classList.contains('blue-ghost')) ||
+        (squares[pacmanIndex].classList.contains('orange-ghost')) ||
+        (squares[pacmanIndex].classList.contains('green-ghost')))) {
       playerScore += 200
       // * finding the ghost that pacman just ate
       if (redGhost.currentIndex === pacmanIndex) {
@@ -277,7 +351,7 @@ function init() {
         orangeGhost.direction = orangeGhost.ogDirection
         squares[orangeGhost.currentIndex].classList.add('orange-ghost')
       }
-    } 
+    }
   }
 
   // ---------------------------------------------- GHOST MOVEMENT ---------------------------------------------- //
@@ -305,7 +379,7 @@ function init() {
 
     // * checks if the next square in the ghosts movement includes a wall, if it does - update the ghosts direction 
     if (squares[ghostColor.currentIndex + ghostColor.direction].classList.contains('maze-wall')) {
-      updateRedGhostDirection(ghostColor)
+      updatedGhostDirection(ghostColor)
     } else {
       ghostColor.currentIndex += ghostColor.direction
     }
@@ -321,11 +395,11 @@ function init() {
       alert('GAME OVER 2!')
       // running = false
       gameOver()
-    } 
+    }
   }
 
   // * Function to find ghosts new movement
-  function updateRedGhostDirection(ghostColor) {
+  function updatedGhostDirection(ghostColor) {
     // finding the index of all 4 possible squares surrounding the ghost and putting them into an array 
     const possibleSquareUp = ghostColor.currentIndex - width
     const possibleSquareDown = ghostColor.currentIndex + width
@@ -420,7 +494,12 @@ function init() {
     clearInterval(blueGhostMovementTimer)
     clearInterval(orangeGhostMovementTimer)
     clearInterval(greenGhostMovementTimer)
+    clearInterval(redGhostScatterTimer)
+    clearInterval(blueGhostScatterTimer)
+    clearInterval(orangeGhostScatterTimer)
+    clearInterval(greenGhostScatterTimer)
     playerScore = 0
+    storeScores()
   }
 
   // * Event listeners
@@ -429,43 +508,3 @@ function init() {
 }
 
 window.addEventListener('DOMContentLoaded', init)
-
-
-
-
-
-
-
-// // Local storage notes 
-// // Create your variables to get your data from local storage 
-// // The first one allows you to get the data from local storage so that you can manipulate it however you need to and returns null if there is no data available in local storage
-// // The second one gives you a copy of that data which you can display in the browser however you choose to
-// let storedHiScore = localStorage.getItem('storedHiScore') ? JSON.parse(localStorage.getItem('storedHiScore')) : null
-// const data = JSON.parse(localStorage.getItem('storedHiScore'))
-// // Function to set up your page to display your high score  
-// function hiScoreCreate() {
-//   const hiScore = document.createElement('div')
-//   hiScore.classList.add('hi-score')
-//   hiScore.innerHTML = storedHiScore
-//   eachScore.appendChild(hiScore)
-// }
-// // Function to store your score into local storage - it's up to you at what point in the game to call this function
-// function storeScores() {
-//   if (points > storedHiScore) { // if the current points value is higher than the value stored in local storage
-//     storedHiScore = points // assign storedHiScore to equal the current value of points
-//     localStorage.setItem('storedHiScore', JSON.stringify(storedHiScore)) // set storedHiScore into local storage
-//     // this is a key value pair - you are setting the key above and then giving it the value of your latest 
-//     // high score
-//     hiScoreCreate() // this will enable you to display the score immediately if needed
-//   }
-// }
-// // Create a function to check if there is any data in local storage when the page is loaded, if so - 
-// // display this data using the hiScoreCreate function, otherwise - do nothing.
-// // Invoke this function immediately so that it is run as soon as the DOM content is loaded   
-// function displayHiScore() {
-//   data ? hiScoreCreate(data) : null
-// }
-// displayHiScore()
-// // If you ever want to reset the data - you can do this in the console - localStorage.clear()
-// // or you can create a function and invoke localStorage.clear() within it - if you want the user to have 
-// // control over what is stored. 
