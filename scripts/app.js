@@ -5,11 +5,6 @@ function init() {
   // pacman movement storing directions from handlekeydown events and using them when possible - able to store a proposed direction in a variable and use it when pacman hits a wall but trying to find a way to check the proposed direction at every square and if it's not possible continue with current direction - a solution for this was to only update the direction variable IF pacman could move in that direction 
   // ghost movement !!!!! couldn't figure out for ages how to get them to move forward unless they hit a wall - am pleased with my ghost movement function though. Had a problem with ghosts repeating their movement back and forward and travelling through the walls - managed to figure out a solution using a filter on possible directions and then randomly choosing a direction from possible directions and only doing this when they hit a wall
 
-  // THINGS TO ADD 
-  // - sounds 
-  // - add regex for practice 
-  // - local storage for highscore
-
   // ? make the grid 
   // ? make pacman 
   // ? build the maze walls with divs 
@@ -31,6 +26,9 @@ function init() {
   // ? pacman eat blue ghost and send them back to the start and gets points
   // ? make sure ghosts timers are working ok
   // ? change pacman direction
+  // ? add play again button and modal pop out 
+  // ! add sounds 
+  // ! make option for choosing your player / pacman colour
 
   // ---------------------------------------------- VARIABLES ---------------------------------------------- //
 
@@ -39,6 +37,8 @@ function init() {
   const scoreDisplay = document.querySelector('.score-text')
   const highScoreDisplay = document.querySelector('.highscore-text')
   const startBtn = document.querySelector('.start-button')
+  const modal = document.querySelector('.modal')
+  const restartButton = document.querySelector('.restart-button')
 
   // Grid variables 
   const width = 18
@@ -51,14 +51,14 @@ function init() {
   const bigFoods = [109, 124, 289, 304]
 
   // scoring
-  let storedHiScore = localStorage.getItem('storedHiScore') ? JSON.parse(localStorage.getItem('storedHiScore')) : null
+  let storedHiScore = localStorage.getItem('storedHiScore') ? JSON.parse(localStorage.getItem('storedHiScore')) : 0
   const data = JSON.parse(localStorage.getItem('storedHiScore'))
 
   // pacman info
+  const pacmanStartIndex = 292
   let pacmanIndex = 292
   let direction = 'right'
   let playerScore = 0
-  // let running = false
   let startGameTimer
 
   // ghost info 
@@ -118,12 +118,11 @@ function init() {
   displayHiScore()
 
   function hiScoreCreate() {
-    highScoreDisplay.textContent = storedHiScore
+    highScoreDisplay.innerHTML = storedHiScore
   }
 
   // called by gameOver
   function storeScores() {
-    console.log(storedHiScore)
     if (playerScore > storedHiScore) { 
       storedHiScore = playerScore 
       localStorage.setItem('storedHiScore', JSON.stringify(storedHiScore)) 
@@ -149,7 +148,6 @@ function init() {
   }
   makeGrid()
 
-  highScoreDisplay.innerHTML = '00'
   squares[pacmanIndex].classList.add('pacman') // controls where the player is based on the index of the square
 
   // * Function to add maze walls 
@@ -192,7 +190,6 @@ function init() {
 
   // * Function to kick off the timers for pacman movement and ghost movement
   function startGame() {
-    // running = true
     startGameTimer = setInterval(pacmanMovement, 300)
     redGhostMovementTimer = setInterval(() => {
       ghostMovement(redGhost)
@@ -207,8 +204,6 @@ function init() {
       ghostMovement(greenGhost)
     }, greenGhost.speed)
     startBtn.classList.add('hidden')
-
-    // pacmanToAnimate.classList.add('pacman-animation')
   }
 
   function restartGhostNormalMovement() {
@@ -289,6 +284,9 @@ function init() {
     squares.forEach(square => square.classList.remove('pacman'))
     squares[pacmanIndex].classList.add('pacman')
 
+    // squares.forEach(square => square.classList.remove('pacman-animation'))
+    // squares[pacmanIndex].classList.add('pacman-animation')
+
     squares.forEach(square => square.classList.remove(direction))
     squares[pacmanIndex].classList.add(direction)
 
@@ -309,8 +307,7 @@ function init() {
         (squares[pacmanIndex].classList.contains('blue-ghost')) ||
         (squares[pacmanIndex].classList.contains('orange-ghost')) ||
         (squares[pacmanIndex].classList.contains('green-ghost')))) {
-      alert('THE GHOST GOT YOU!')
-      // running = false
+      // alert('THE GHOST GOT YOU!')
       gameOver()
     } else if ((redGhost.scatterColor === true &&
       blueGhost.scatterColor === true &&
@@ -392,7 +389,7 @@ function init() {
 
     // * checking for pacman and ghost colision 
     if ((squares[ghostColor.currentIndex].classList.contains('pacman')) && ghostColor.scatterColor === false) {
-      alert('GAME OVER 2!')
+      // alert('GAME OVER 2!')
       // running = false
       gameOver()
     }
@@ -489,22 +486,53 @@ function init() {
 
   // * Function to clear timers when player loses
   function gameOver() {
+    console.log(playerScore)
+    console.log(storedHiScore)
+
     clearInterval(startGameTimer)
-    clearInterval(redGhostMovementTimer)
-    clearInterval(blueGhostMovementTimer)
-    clearInterval(orangeGhostMovementTimer)
-    clearInterval(greenGhostMovementTimer)
+    clearGhostTimers()
     clearInterval(redGhostScatterTimer)
     clearInterval(blueGhostScatterTimer)
     clearInterval(orangeGhostScatterTimer)
     clearInterval(greenGhostScatterTimer)
-    playerScore = 0
     storeScores()
+    playerScore = 0
+    startBtn.classList.add('hidden')
+    setTimeout(gameOverModal, 200)
   }
 
+  function gameOverModal() {
+    modal.classList.add('show-modal')
+    squares.forEach(square => square.classList.remove('red-ghost'))
+    squares.forEach(square => square.classList.remove('blue-ghost'))
+    squares.forEach(square => square.classList.remove('green-ghost'))
+    squares.forEach(square => square.classList.remove('orange-ghost'))
+    squares.forEach(square => square.classList.remove('food'))
+    squares.forEach(square => square.classList.remove('big-food'))
+    squares.forEach(square => square.classList.remove('pacman'))
+    squares.forEach(square => square.classList.remove('scatter-ghost'))
+    squares.forEach(square => square.classList.remove('up'))
+    squares.forEach(square => square.classList.remove('down'))
+    squares.forEach(square => square.classList.remove('left'))
+  }
+
+  function closeModal() {
+    redGhost.currentIndex = redGhost.startIndex
+    blueGhost.currentIndex = blueGhost.startIndex
+    greenGhost.currentIndex = greenGhost.startIndex
+    orangeGhost.currentIndex = orangeGhost.startIndex
+    pacmanIndex = pacmanStartIndex
+    direction = 'right'
+    addFood()
+    placeGhosts()
+    modal.classList.remove('show-modal')
+    setTimeout(startGame, 1000)
+  }
+ 
   // * Event listeners
   window.addEventListener('keydown', updateMovement)
   startBtn.addEventListener('click', startGame)
+  restartButton.addEventListener('click', closeModal)
 }
 
 window.addEventListener('DOMContentLoaded', init)

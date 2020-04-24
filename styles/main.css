@@ -53,7 +53,7 @@ body {
   flex: 0 0 350px;
 }
 
-.start-button {
+.start-button, .restart-button {
   animation: pulse 1.5s infinite;
   font-family: 'Press Start 2P', cursive;
   font-size: 15px;
@@ -89,11 +89,11 @@ body {
 }
 
 .current-score {
-  margin: 20px 50px;
+  margin: 20px 30px;
 }
 
 .high-score {
-  margin: 20px 50px;
+  margin: 20px 30px;
 }
 
 .footer-wrapper {
@@ -189,7 +189,7 @@ div.grid-item.pacman {
 
 @keyframes eat {
   0% {
-    clip-path: circle(50% at 50% 50%);
+    clip-path: polygon(0 50%, 0 64%, 4% 76%, 11% 87%, 23% 94%, 36% 98%, 48% 100%, 55% 99%, 65% 96%, 75% 91%, 85% 84%, 27% 51%, 86% 17%, 80% 11%, 72% 5%, 62% 2%, 49% 0, 36% 1%, 25% 3%, 14% 9%, 9% 16%, 3% 26%, 0 37%);
   }
   100% {
     clip-path: polygon(0 50%, 0 64%, 4% 76%, 11% 87%, 23% 94%, 36% 98%, 48% 100%, 55% 99%, 65% 96%, 75% 91%, 85% 84%, 27% 51%, 86% 17%, 80% 11%, 72% 5%, 62% 2%, 49% 0, 36% 1%, 25% 3%, 14% 9%, 9% 16%, 3% 26%, 0 37%);
@@ -210,4 +210,43 @@ div.grid-item.pacman {
 
 .hidden {
   visibility: hidden;
+}
+
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1; /* Sit on top */
+  width: 100%;
+  height: 100%;
+  background-color: rgba(180, 122, 234, 0.8);  
+  visibility: hidden;
+  transition: visibility 0s linear 0.25s, opacity 0.25s 0s, transform 0.25s;
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgb(97, 226, 148, 1);
+  padding: 50px;
+  width: 500px;
+  /* border-radius: 0.5rem; */
+}
+
+.modal-text {
+  text-align: center;
+  line-height: 50px;
+}
+
+.show-modal {
+  visibility: visible;
+  /* opacity: 1; */
+  transition: visibility 0s linear 0s, opacity 0.25s 0s, transform 0.25s;
+}
+
+.restart-again {
+  display: flex;
+  justify-content: space-around;
 }
