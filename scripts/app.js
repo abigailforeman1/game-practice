@@ -27,8 +27,7 @@ function init() {
   // ? make sure ghosts timers are working ok
   // ? change pacman direction
   // ? add play again button and modal pop out 
-  // ! add sounds 
-  // ! make option for choosing your player / pacman colour
+  // ? add sounds 
 
   // ---------------------------------------------- VARIABLES ---------------------------------------------- //
 
@@ -36,9 +35,14 @@ function init() {
   const grid = document.querySelector('.grid')
   const scoreDisplay = document.querySelector('.score-text')
   const highScoreDisplay = document.querySelector('.highscore-text')
-  const startBtn = document.querySelector('.start-button')
+  const startButton = document.querySelector('.start-button')
   const modal = document.querySelector('.modal')
   const restartButton = document.querySelector('.restart-button')
+  const audio = document.querySelector('.sound-effects')
+  const audioButton = document.querySelector('.audio-button')
+  const themeTune = document.querySelector('.theme-tune')
+  const sfxButton = document.querySelector('.sound-effects-button')
+  const sfxAudio = document.querySelector('.sound-effects')
 
   // Grid variables 
   const width = 18
@@ -123,15 +127,27 @@ function init() {
 
   // called by gameOver
   function storeScores() {
-    if (playerScore > storedHiScore) { 
-      storedHiScore = playerScore 
-      localStorage.setItem('storedHiScore', JSON.stringify(storedHiScore)) 
+    if (playerScore > storedHiScore) {
+      storedHiScore = playerScore
+      localStorage.setItem('storedHiScore', JSON.stringify(storedHiScore))
       hiScoreCreate()
     }
   }
 
   function displayHiScore() {
     data ? hiScoreCreate(data) : null
+  }
+
+  // * Function to toggle audio
+  function toggleAudio() {
+    audioButton.textContent === 'TURN MUSIC ON' ? audioButton.textContent = 'TURN MUSIC OFF' : audioButton.textContent = 'TURN MUSIC ON'
+    return themeTune.paused ? themeTune.play() : themeTune.pause()
+  }
+
+  function toggleSoundEffects() {
+    sfxButton.textContent === 'TURN SFX OFF' ? sfxButton.textContent = 'TURN SFX ON' : sfxButton.textContent = 'TURN SFX OFF'
+    // return sfxAudio.paused ? sfxAudio.play() : sfxAudio.pause()
+    return sfxAudio.muted === true ? sfxAudio.muted = false : sfxAudio.muted = true
   }
 
   // ---------------------------------------------- MAKING GRID ---------------------------------------------- //
@@ -203,7 +219,7 @@ function init() {
     greenGhostMovementTimer = setInterval(() => {
       ghostMovement(greenGhost)
     }, greenGhost.speed)
-    startBtn.classList.add('hidden')
+    startButton.classList.add('hidden')
   }
 
   function restartGhostNormalMovement() {
@@ -307,7 +323,8 @@ function init() {
         (squares[pacmanIndex].classList.contains('blue-ghost')) ||
         (squares[pacmanIndex].classList.contains('orange-ghost')) ||
         (squares[pacmanIndex].classList.contains('green-ghost')))) {
-      // alert('THE GHOST GOT YOU!')
+      audio.src = 'assets/audio/game_over.wav'
+      audio.play()
       gameOver()
     } else if ((redGhost.scatterColor === true &&
       blueGhost.scatterColor === true &&
@@ -317,6 +334,8 @@ function init() {
         (squares[pacmanIndex].classList.contains('blue-ghost')) ||
         (squares[pacmanIndex].classList.contains('orange-ghost')) ||
         (squares[pacmanIndex].classList.contains('green-ghost')))) {
+      audio.src = 'assets/audio/eat_ghost.wav'
+      audio.play()
       playerScore += 200
       // * finding the ghost that pacman just ate
       if (redGhost.currentIndex === pacmanIndex) {
@@ -389,8 +408,8 @@ function init() {
 
     // * checking for pacman and ghost colision 
     if ((squares[ghostColor.currentIndex].classList.contains('pacman')) && ghostColor.scatterColor === false) {
-      // alert('GAME OVER 2!')
-      // running = false
+      audio.src = 'assets/audio/game_over.wav'
+      audio.play()
       gameOver()
     }
   }
@@ -452,10 +471,14 @@ function init() {
   // * Function to check for pink food where pacman moves and update score
   function eatFood() {
     if (squares[pacmanIndex].classList.contains('food')) {
+      audio.src = 'assets/audio/eat_dot.wav'
+      audio.play()
       playerScore += 10
       scoreDisplay.innerHTML = playerScore
       squares[pacmanIndex].classList.remove('food')
     } else if (squares[pacmanIndex].classList.contains('big-food')) {
+      audio.src = 'assets/audio/eat_big_food.wav'
+      audio.play()
       playerScore += 50
       squares[redGhost.currentIndex].classList.add('scatter-ghost')
       squares[blueGhost.currentIndex].classList.add('scatter-ghost')
@@ -486,9 +509,6 @@ function init() {
 
   // * Function to clear timers when player loses
   function gameOver() {
-    console.log(playerScore)
-    console.log(storedHiScore)
-
     clearInterval(startGameTimer)
     clearGhostTimers()
     clearInterval(redGhostScatterTimer)
@@ -497,8 +517,8 @@ function init() {
     clearInterval(greenGhostScatterTimer)
     storeScores()
     playerScore = 0
-    startBtn.classList.add('hidden')
-    setTimeout(gameOverModal, 200)
+    startButton.classList.add('hidden')
+    setTimeout(gameOverModal, 2000)
   }
 
   function gameOverModal() {
@@ -517,6 +537,7 @@ function init() {
   }
 
   function closeModal() {
+    audio.src = null
     redGhost.currentIndex = redGhost.startIndex
     blueGhost.currentIndex = blueGhost.startIndex
     greenGhost.currentIndex = greenGhost.startIndex
@@ -528,11 +549,13 @@ function init() {
     modal.classList.remove('show-modal')
     setTimeout(startGame, 1000)
   }
- 
+
   // * Event listeners
   window.addEventListener('keydown', updateMovement)
-  startBtn.addEventListener('click', startGame)
+  startButton.addEventListener('click', startGame)
   restartButton.addEventListener('click', closeModal)
+  audioButton.addEventListener('click', toggleAudio)
+  sfxButton.addEventListener('click', toggleSoundEffects)
 }
 
 window.addEventListener('DOMContentLoaded', init)

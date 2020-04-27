@@ -22,13 +22,13 @@ body {
   width: 100vw;
 }
 
-.rules-section {
+.rules-section, .blank-section {
   flex: 0 0 350px;
   align-self: center;
   padding: 30px;
 }
 
-.rules-header {
+.rules-header, .audio-header {
   font-size: 20px;
 }
 
@@ -51,6 +51,14 @@ body {
 
 .blank-section {
   flex: 0 0 350px;
+}
+
+.audio-button, .sound-effects-button {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 15px;
+  margin: 15px;
+  padding: 10px;
+  border: none;
 }
 
 .start-button, .restart-button {
@@ -81,6 +89,41 @@ body {
 .pulse {
   -webkit-animation-name: pulse;
   animation-name: pulse;
+}
+
+.points-wrapper {
+  display: flex;
+  font-size: 12px;
+}
+
+.point-wrapper {
+  margin: 5px 10px 5px 0;
+  display: flex;
+}
+
+.food-points {
+  background-color: rgb(255, 105, 180);
+  border-radius: 100%;
+  width: 7px;
+  height: 7px;
+  margin: 14px;
+}
+
+.big-food-points {
+  background-color: hotpink;
+  border-radius: 100%;
+  width: 19px;
+  height: 19px;
+  margin: 8px;
+}
+
+.scatter-ghost-points {
+  background-color: cornflowerblue;
+  border-radius: 0;
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+  clip-path: polygon(100% 100%, 100% 40%, 98% 28%, 90% 16%, 80% 7%, 66% 1%, 56% 0, 45% 0, 33% 2%, 21% 7%, 11% 14%, 4% 24%, 1% 35%, 0 47%, 0 61%, 0% 75%, 0% 87%, 0% 100%, 17% 86%, 33% 100%, 49% 85%, 65% 100%, 82% 85%);
 }
 
 .header-wrapper {
@@ -189,7 +232,7 @@ div.grid-item.pacman {
 
 @keyframes eat {
   0% {
-    clip-path: polygon(0 50%, 0 64%, 4% 76%, 11% 87%, 23% 94%, 36% 98%, 48% 100%, 55% 99%, 65% 96%, 75% 91%, 85% 84%, 27% 51%, 86% 17%, 80% 11%, 72% 5%, 62% 2%, 49% 0, 36% 1%, 25% 3%, 14% 9%, 9% 16%, 3% 26%, 0 37%);
+    clip-path: circle(50% at 50% 50%);
   }
   100% {
     clip-path: polygon(0 50%, 0 64%, 4% 76%, 11% 87%, 23% 94%, 36% 98%, 48% 100%, 55% 99%, 65% 96%, 75% 91%, 85% 84%, 27% 51%, 86% 17%, 80% 11%, 72% 5%, 62% 2%, 49% 0, 36% 1%, 25% 3%, 14% 9%, 9% 16%, 3% 26%, 0 37%);
@@ -214,35 +257,45 @@ div.grid-item.pacman {
 
 .modal {
   position: fixed;
+  display: flex;
+  justify-content: center;
   left: 0;
   top: 0;
   z-index: 1; /* Sit on top */
   width: 100%;
   height: 100%;
-  background-color: rgba(180, 122, 234, 0.8);  
+  background-color: rgb(97, 226, 148, 1);
   visibility: hidden;
   transition: visibility 0s linear 0.25s, opacity 0.25s 0s, transform 0.25s;
 }
 
 .modal-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgb(97, 226, 148, 1);
-  padding: 50px;
-  width: 500px;
-  /* border-radius: 0.5rem; */
+  flex-direction: column;
+  align-self: center;
+}
+
+.pacman-wrapper {
+  display: flex;
+  justify-content: space-around;
+}
+
+.pacman-gameover {
+  background-color: rgb(255, 238, 0);
+  border-radius: 100%;
+  width: 70px;
+  height: 70px;
+  margin: 0 0 40px 0;
+  clip-path: polygon(0 50%, 0 64%, 4% 76%, 11% 87%, 23% 94%, 36% 98%, 48% 100%, 55% 99%, 65% 96%, 75% 91%, 85% 84%, 27% 51%, 86% 17%, 80% 11%, 72% 5%, 62% 2%, 49% 0, 36% 1%, 25% 3%, 14% 9%, 9% 16%, 3% 26%, 0 37%);
 }
 
 .modal-text {
+  line-height: 60px;
+  font-size: 50px;
   text-align: center;
-  line-height: 50px;
 }
 
 .show-modal {
   visibility: visible;
-  /* opacity: 1; */
   transition: visibility 0s linear 0s, opacity 0.25s 0s, transform 0.25s;
 }
 

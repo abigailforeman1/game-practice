@@ -8,7 +8,7 @@
   <script type="text/javascript" src="./scripts/app.js"></script>
   <link rel="stylesheet" href="./styles/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <title>GAME 2</title>
+  <title>PAC-MAN</title>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.js"></script>
   <script src="./scripts/sketch.js"></script>
 </head>
@@ -25,6 +25,20 @@
         <p class="rules">Find special big foods to slow down the ghosts and catch them for extra points</p>
         <p class="rules">Eat all the food to win the game - try and beat the highscore</p>
         <p class="rules">Good luck!</p>
+        <div class="points-wrapper">
+            <div class="point-wrapper">
+              <div class="food-points"></div>
+              <p class="points">+10</p>
+            </div>
+            <div class="point-wrapper">
+              <div class="big-food-points"></div>
+              <p class="points">+50</p>
+            </div>
+            <div class="point-wrapper">
+              <div class="scatter-ghost-points"></div>
+              <p class="points">+200</p>
+            </div>
+          </div>
       </section>
       <section class="game-section">
         <div class="header-wrapper">
@@ -38,10 +52,18 @@
           <button class="start-button">START GAME</button>
         </div>
       </section>
-      <section class="blank-section"></section>
+      <section class="blank-section">
+        <button class="audio-button">TURN MUSIC ON</button>
+        <audio class="theme-tune" src="assets/audio/Power_Pill_Aphex_Twin_Pac_Man.mp3"></audio>
+        <button class="sound-effects-button">TURN SFX OFF</button>
+        <audio class="sound-effects"></audio>
+      </section>
     </div>
     <div class="modal">
       <div class="modal-content">
+        <div class="pacman-wrapper">
+          <div class="pacman-gameover pacman-animation"></div>
+        </div>
         <h1 class="modal-text">THE GHOSTS GOT YOU!</h1>
         <div class="restart-again">
           <button class="restart-button">PLAY AGAIN?</button>
